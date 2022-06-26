@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>시간계산기</title>
+    </head>
+    <body>
+        <h1 id="total-time">00:00:00</h1>
+        <input type="text" id="time" />
+        <ul id="timeline"></ul>
+        <script>
+            const time = document.querySelector('#time');
+            const getTime = (time) => {
+                const h = Math.floor(time / 3600);
+                time -= h * 3600;
+                const m = Math.floor(time / 60);
+                time -= m * 60;
+
+                return [h, m, time];
+            };
+            window.onload = () => time.focus();
+
+            const handleInput = (e) => {
+                const isValid = (str) => /[0-9]{1,2}:[0-9]{1,2}/g.test(str);
+                if (e.key === 'Enter') {
+                    if (!isValid(e.target.value)) {
+                        e.target.value = '';
+                        e.target.focus();
+                        return;
+                    }
+                    const li = document.createElement('li');
+                    li.innerText = e.target.value;
+                    const ul = document.querySelector('#timeline');
+                    ul.appendChild(li);
+
+                    const [mm, ss] = e.target.value.split(':');
+
+                    const totalTime = document.querySelector('#total-time');
+                    const [th, tm, ts] = totalTime.innerText.split(':');
+
+                    const totalTimeConverted = th * 3600 + tm * 60 + ts * 1;
+                    const inputedValue = mm * 60 + ss * 1;
+
+                    const [nh, nm, ns] = getTime(
+                        parseInt(totalTimeConverted + inputedValue),
+                    );
+                    const zeroPaste = (time) => (time < 10 ? '0' + time : time);
+
+                    totalTime.innerText = `${zeroPaste(nh)}:${zeroPaste(
+                        nm,
+                    )}:${zeroPaste(ns)}`;
+                    e.target.value = '';
+                    e.target.focus();
+                }
+            };
+            time.addEventListener('keydown', handleInput);
+        </script>
+    </body>
+</html>
